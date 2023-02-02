@@ -19,7 +19,8 @@
     "@fastify/static": "^6.6.1",
     "ethers": "^5.7.2",
     "fastify": "^4.12.0",
-    "lit-auth": "file:../siwl/lit-auth-1.0.0.tgz",
-    "lit-js-sdk": "^1.2.59"
+    "lit-js-sdk": "^1.2.59",
+    "lz-string": "^1.4.4",
+    "siwl-test": "2.0.0"
   }
 }

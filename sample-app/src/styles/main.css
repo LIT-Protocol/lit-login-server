@@ -423,6 +423,7 @@ body {
   color: #0f172a;
   text-align: center;
   word-break: break-all;
+  margin-top: 0.5rem;
 }
 
 .emoji {

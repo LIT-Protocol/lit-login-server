@@ -1,4 +1,5 @@
 import { createQueryParams, encode, decode, getStateParam, setStateParam, isAllowedProvider, removeStateParam } from './utils';
+import LZString from 'lz-string';
 
 export class LitOAuthClient {
 	domain;
@@ -41,7 +42,6 @@ export class LitOAuthClient {
 			this.appState = {
 				provider: provider,
 				credential: credential,
-				state: getStateParam(),
 			}
 		}
 	
@@ -51,14 +51,13 @@ export class LitOAuthClient {
 			this.appState = {
 				provider: provider,
 				credential: access_token,
-				state: getStateParam(),
 			}
 		}
 
 		return this.appState;
 	}
 
-	clearAppState() {
+	logout() {
 		this.appState = null;
 		removeStateParam();
 	}
@@ -66,11 +65,15 @@ export class LitOAuthClient {
 	_prepareLoginUrl() {
 		const baseUrl = `${import.meta.env.VITE_LOGIN_ORIGIN}/login`;
 		const state = encode(setStateParam());
-		const params = {
+		const authParams = {
 			app_domain: this.domain,
 			app_redirect: this.redirectUri,
 		}
-		const queryParams = createQueryParams(params);
-		return `${baseUrl}?${queryParams}&state=${state}`;
+		const queryAuthParams = createQueryParams(authParams);
+		if (this.uiConfig && Object.keys(this.uiConfig).length > 0) {
+			const uiParams = LZString.compressToEncodedURIComponent(JSON.stringify(this.uiConfig));
+			return `${baseUrl}?${queryAuthParams}&state=${state}&ui=${uiParams}`;
+		}
+		return `${baseUrl}?${queryAuthParams}&state=${state}`;
 	}
 }

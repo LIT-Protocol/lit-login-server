@@ -1,5 +1,4 @@
-import LitJsSdk from 'lit-js-sdk';
-import { LitAuth } from 'lit-auth';
+import { LitAuth } from 'siwl-test';
 import './src/styles/main.css';
 import { LitOAuthClient } from './src/js/core';
 import { initUI, bindLogin, bindLogout, bindLitAuthEvents, renderUI } from './src/js/ui';
@@ -7,10 +6,11 @@ import { SESSION_KEY } from './src/js/constants';
 
 // ------ Initialize
 const uiConfig = {
-	app: {
-		name: 'Demo App',
-		img_url: 'https://www.dictionary.com/e/wp-content/uploads/2018/02/20200713_eyes_1000x700.png',
-	},
+	theme: 'light',
+	appName: 'Demo App',
+	appLogo: 'https://em-content.zobj.net/thumbs/160/apple/81/eyes_1f440.png',
+	gradientColor: '#8AC926',
+	linkColor: '#4C7A15',
 }
 
 const oAuthClient = new LitOAuthClient(
@@ -75,7 +75,7 @@ window.onload = async () => {
 
 const handleError = () => {
 	localStorage.removeItem(SESSION_KEY);
-	oAuthClient.clearAppState();
+	oAuthClient.logout();
 	renderUI('error');
 }
 
@@ -117,6 +117,6 @@ async function authWithDiscord(credential) {
 
 function handleLogout() {
 	localStorage.removeItem(SESSION_KEY);
-	oAuthClient.clearAppState();
+	oAuthClient.logout();
 	window.location.replace(window.location.origin);
 }
