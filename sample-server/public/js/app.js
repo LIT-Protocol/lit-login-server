@@ -1,50 +1,44 @@
+var lightMode = true;
+
 window.onload = async () => {
+	// Login page
 	if (window.location.pathname === '/login') {
 		// Check url for params
 		const searchParams = new URLSearchParams(document.location.search);
 		const state = searchParams.get('state');
 
-		initGoogleLogin(state);
-		initDiscordLogin(state);
-
 		// Update copy
 		const appDomain = searchParams.get('app_domain');
-		const prompt = document.getElementById('prompt');
 
 		// Check for UI config param
-		const uiConfigParam = searchParams.get('ui');
-		if (uiConfigParam) {
-			const uiConfig = JSON.parse(LZString.decompressFromEncodedURIComponent(uiConfigParam));
-
-			if ("appName" in uiConfig && uiConfig.appName && uiConfig.appName.length > 0) {
-				if (prompt && prompt.innerHTML.length === 0 && appDomain) {
-					prompt.innerHTML = `to continue to <a href=${appDomain} target="_blank" rel="noopener noreferrer">${uiConfig.appName}</a>`;
+		const ui = searchParams.get('ui');
+		if (ui) {
+			try {
+				const uiConfig = JSON.parse(LZString.decompressFromEncodedURIComponent(ui));
+				if (uiConfig && Object.keys(uiConfig).length > 0) {
+					customizeUI(uiConfig, appDomain);
 				}
-			}
-
-			if ("appLogo" in uiConfig && uiConfig.appLogo && uiConfig.appLogo.length > 0) {
-				document.getElementById('appLogo').src = uiConfig.appLogo;
-			}
-
-			let root = document.documentElement;
-
-			if ("gradientColor" in uiConfig && uiConfig.gradientColor && uiConfig.gradientColor.length > 0) {
-				root.style.setProperty('--gradientColor', uiConfig.gradientColor);
-			}
-
-			if ("linkColor" in uiConfig && uiConfig.linkColor && uiConfig.linkColor.length > 0) {
-				root.style.setProperty('--linkColor', uiConfig.linkColor);
+			} catch (e) {
 			}
 		}
 
-		// Update copy if still blank
-		if (prompt && prompt.innerHTML.length === 0 && appDomain) {
-			prompt.innerHTML = `to continue to <a href=${appDomain} target="_blank" rel="noopener noreferrer">${appDomain}</a>`;
+		initPrompt(appDomain);
+		initGoogleLogin(state);
+		initDiscordLogin(state);
+	} else if (window.location.pathname === '/error') {
+		// Style other pages
+		if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+			lightMode = false;
+			document.body.setAttribute("data-lit-theme", "dark");
 		}
 	}
-};
+}
 
 function initGoogleLogin(state) {
+	let theme = "outline";
+	if (!lightMode) {
+		theme = "filled_blue";
+	}
 	google.accounts.id.initialize({
 		client_id: "355007986731-llbjq5kbsg8ieb705mo64nfnh88dhlmn.apps.googleusercontent.com",
 		ux_mode: 'redirect',
@@ -52,7 +46,7 @@ function initGoogleLogin(state) {
 	});
 	google.accounts.id.renderButton(
 		document.getElementById("googleLogin"),
-		{ theme: "outline", size: "large", text: "continue_with", width: 256 } 
+		{ theme: theme, size: "large", text: "continue_with", width: 256 } 
 	);
 }
 
@@ -62,5 +56,45 @@ function initDiscordLogin(state) {
 	const url = `${baseUrl}&state=${state}`;
 	const linkBtn = document.getElementById("discordLogin");
 	linkBtn.href = url;
-	linkBtn.classList.remove("button--disabled");
+	linkBtn.classList.remove("litButton--disabled");
+}
+
+function customizeUI(uiConfig, appDomain) {
+	const prompt = document.getElementById('prompt');
+
+	if ("theme" in uiConfig && uiConfig.theme) {
+		if (uiConfig.theme === "dark") {
+			lightMode = false;
+			document.body.setAttribute("data-lit-theme", "dark");
+		}
+	}
+
+	if ("appName" in uiConfig && uiConfig.appName && uiConfig.appName.length > 0) {
+		if (prompt && prompt.innerHTML.length === 0 && appDomain) {
+			prompt.innerHTML = `to continue to <a href=${appDomain} target="_blank" rel="noopener noreferrer">${uiConfig.appName}</a>`;
+		}
+	}
+
+	if ("appLogo" in uiConfig && uiConfig.appLogo && uiConfig.appLogo.length > 0) {
+		document.getElementById('appLogo').src = uiConfig.appLogo;
+	}
+
+	let root = document.documentElement;
+
+	if ("gradientColor" in uiConfig && uiConfig.gradientColor && uiConfig.gradientColor.length > 0) {
+		root.style.setProperty('--lit-gradient-color', uiConfig.gradientColor);
+	}
+
+	if ("linkColor" in uiConfig && uiConfig.linkColor && uiConfig.linkColor.length > 0) {
+		root.style.setProperty('--lit-link-color', uiConfig.linkColor);
+	}
+}
+
+function initPrompt(appDomain) {
+	const prompt = document.getElementById('prompt');
+
+	// Update copy if still blank
+	if (prompt && prompt.innerHTML.length === 0 && appDomain) {
+		prompt.innerHTML = `to continue to <a href=${appDomain} target="_blank" rel="noopener noreferrer">${appDomain}</a>`;
+	}
 }

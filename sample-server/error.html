@@ -6,24 +6,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign in with Lit</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" type="text/css" href="/css/lit.css" />
   <link rel="stylesheet" type="text/css" href="/css/main.css" />
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script src="js/app.js"></script>
 </head>
-<body>
-  <div class="modal">
-    <div class="img img--error">
-			<div class="img__bg"></div>
-			<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="64" height="64" stroke-width="1" stroke="currentColor" class="img__icon">
-				<path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
-			</svg>
-		</div>
-    <h1 class="modal__title">Unable to sign in</h1>
-    <p class="modal__body">We were unable to verify the app requesting your login.</p>
-    <div class="modal__buttonWrapper">
-      <button class="button button--primary" onclick="history.back()">Go back</button>
+<body data-lit-theme="light">
+  <div class="litBg litBg--custom"></div>
+  <div class="litModal">
+    <div class="litModal__content">
+      <div class="litImg litImg--error">
+        <div class="litImg__bg"></div>
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" width="64" height="64" stroke-width="1" stroke="currentColor" class="litImg__icon">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+        </svg>
+      </div>
+      <h1 class="litModal__title">Unable to sign in</h1>
+      <p class="litModal__body">We were unable to verify the app requesting your login. Retrace your steps and try again.</p>
     </div>
   </div>
 </body>
-<!-- Scripts -->
-<script src="js/app.js"></script>
 </html>

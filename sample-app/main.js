@@ -1,22 +1,32 @@
 import { LitAuth } from 'siwl-test';
 import './src/styles/main.css';
+import './src/styles/lit.css';
 import { LitOAuthClient } from './src/js/core';
-import { initUI, bindLogin, bindLogout, bindLitAuthEvents, renderUI } from './src/js/ui';
+import { initUI, bindLogin, bindLogout } from './src/js/appUI';
+import { setLitUIConfig, renderLitUI } from './src/js/litUI';
 import { SESSION_KEY } from './src/js/constants';
 
 // ------ Initialize
-const uiConfig = {
+const lightUIConfig = {
 	theme: 'light',
 	appName: 'Demo App',
-	appLogo: 'https://em-content.zobj.net/thumbs/160/apple/81/eyes_1f440.png',
-	gradientColor: '#8AC926',
-	linkColor: '#4C7A15',
+	appLogo: 'https://cdn.shopify.com/s/files/1/1061/1924/products/The_Sun_Face_Emoji_1024x1024.png?v=1571606063',
+	gradientColor: '#736CED',
+	linkColor: '#5149E9',
+}
+
+const darkUIConfig = {
+	theme: 'dark',
+	appName: 'Demo App',
+	appLogo: 'https://cdn.shopify.com/s/files/1/1061/1924/products/Dark_Blue_Moon_Emoji_1024x1024.png?v=1571606063',
+	gradientColor: '#B4E33D',
+	linkColor: '#B4E33D',
 }
 
 const oAuthClient = new LitOAuthClient(
 	import.meta.env.VITE_CLIENT_DOMAIN,
 	import.meta.env.VITE_CLIENT_REDIRECT_URI,
-	uiConfig,
+	darkUIConfig,
 );
 
 // Initialize Lit Auth
@@ -33,6 +43,9 @@ window.onload = async () => {
 	bindLogin(() => oAuthClient.loginWithRedirect());
 	bindLogout(handleLogout);
 
+	// Set Lit UI config
+	setLitUIConfig(oAuthClient.uiConfig);
+
 	// Listen to Lit Auth events
 	bindLitAuthEvents(litAuthClient);
 
@@ -40,35 +53,20 @@ window.onload = async () => {
 	const path = window.location.origin + window.location.pathname;
 	const strippedPath = path.replace(/\/$/, '');
 	const searchParams = new URLSearchParams(document.location.search);
+	// Check if there's an error
+	const error = searchParams.get('error');
+	if (error) {
+		handleError();
+		return;
+	}
+	
 	const provider = searchParams.get('provider');
 	if (strippedPath.replace(/\/$/, '') === oAuthClient.redirectUri && provider) {
-		renderUI('loading');
-
-		// Check if there's an error
-		const error = searchParams.get('error');
-		if (error) {
+		try {
+			handleLogin();
+		} catch (e) {
+			console.error(e);
 			handleError();
-			return;
-		}
-		
-		// Handle redirect callback
-		const appState = await oAuthClient.handleRedirectCallback();
-		// Clear url params
-		window.history.pushState({}, document.title, "/");
-
-		// Generate session keys with Lit Auth
-		let session = null;
-		if (appState) {
-			if (appState.provider === 'google') {
-				session = await authWithGoogle(appState.credential);
-			} else if (appState.provider === 'discord') {
-				session = await authWithDiscord(appState.credential);
-			}
-		}
-
-		if (session) {
-			renderUI('logged-in');
-			bindLogout(handleLogout);
 		}
 	}
 };
@@ -76,7 +74,7 @@ window.onload = async () => {
 const handleError = () => {
 	localStorage.removeItem(SESSION_KEY);
 	oAuthClient.logout();
-	renderUI('error');
+	renderLitUI('error');
 }
 
 async function authWithGoogle(credential) {
@@ -115,8 +113,50 @@ async function authWithDiscord(credential) {
 	return session;
 }
 
+async function handleLogin() {
+	renderLitUI('verify-redirect');
+
+	// Handle redirect callback
+	const appState = await oAuthClient.handleRedirectCallback();
+	// Clear url params
+	window.history.pushState({}, document.title, "/");
+
+	// Generate session keys with Lit Auth
+	let session = null;
+	if (appState) {
+		if (appState.provider === 'google') {
+			session = await authWithGoogle(appState.credential);
+		} else if (appState.provider === 'discord') {
+			session = await authWithDiscord(appState.credential);
+		}
+	}
+
+	if (session) {
+		initUI();
+		bindLogout(handleLogout);
+	}
+}
+
 function handleLogout() {
 	localStorage.removeItem(SESSION_KEY);
 	oAuthClient.logout();
 	window.location.replace(window.location.origin);
+}
+
+function bindLitAuthEvents(litAuthClient) {
+	litAuthClient.on('relayer_minting', (data) => {
+		renderLitUI('minting');
+	});
+
+	litAuthClient.on('relayer_polling', (data) => {
+		renderLitUI('polling');
+	});
+
+	litAuthClient.on('relayer_minted', (data) => {
+		renderLitUI('polling');
+	});
+
+	litAuthClient.on('creating_session', (data) => {
+		renderLitUI('create-session');
+	});
 }
