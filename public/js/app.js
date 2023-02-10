@@ -105,8 +105,12 @@ function customizeUI(uiConfig, appDomain) {
 	}
 
 	if ("methods" in uiConfig && uiConfig.methods && uiConfig.methods.length > 0) {
-		showGoogle = uiConfig.methods.includes("google");
-		showDiscord = uiConfig.methods.includes("discord");
+		const filteredMethods = uiConfig.methods.filter(n => n);
+		if (filteredMethods.length === 0) {
+			return;
+		}
+		showGoogle = filteredMethods.includes("google");
+		showDiscord = filteredMethods.includes("discord");
 	}
 }
 
