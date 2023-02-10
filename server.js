@@ -161,7 +161,7 @@ fastify.post('/auth/callback/google', async function (req, reply) {
   // Get credential from query string
   const credential = req.body.credential;
 
-  return reply.redirect(301, `${appRedirect}/?provider=google&credential=${credential}&state=${state}`);
+  return reply.redirect(301, `${appRedirect}/?provider=google&id_token=${credential}&state=${state}`);
 });
 
 

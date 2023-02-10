@@ -130,6 +130,6 @@ body {
   min-height: 40px;
 }
 
-#discordLogin {
+#googleLogin:not([hidden]) ~ #discordLogin {
   margin-top: 1rem;
 }
