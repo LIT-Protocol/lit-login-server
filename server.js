@@ -52,12 +52,12 @@ fastify.register(fastifyStatic, {
 
 // Home page
 fastify.get('/', function (req, reply) {
-  return reply.sendFile("index.html", path.join(__dirname));
+  return reply.sendFile("index.html");
 });
 
 // Error page
 fastify.get('/error', function (req, reply) {
-  return reply.sendFile("error.html", path.join(__dirname));
+  return reply.sendFile("error.html");
 });
 
 // Login screen page
@@ -78,7 +78,7 @@ fastify.get('/login', function (req, reply) {
     return reply.redirect('/error?error=invalid_params');
   }
 
-  return reply.sendFile("login.html", path.join(__dirname));
+  return reply.sendFile("login.html");
 });
 
 // Auth callback endpoint for Discord
