@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3300;
+const HOST = process.env.HOST || '0.0.0.0';
 const ORIGIN = process.env.ORIGIN || `http://localhost:${PORT}`;
 const REDIS_URL = process.env.REDIS_URL || "redis://localhost:6379";
 
@@ -168,7 +169,7 @@ fastify.post('/auth/callback/google', async function (req, reply) {
 // Run the server!
 const start = async () => {
   try {
-    await fastify.listen({ port: PORT });
+    await fastify.listen({ port: PORT, host: HOST });
   } catch (err) {
     fastify.log.error(err);
     process.exit(1);
