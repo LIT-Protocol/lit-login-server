@@ -87,7 +87,7 @@ fastify.get('/auth/callback/discord', async function (req, reply) {
   // Check if error has occurred
   const error = req.query.error;
   if (error) {
-    return reply.redirect(301, `http://localhost:4444/?provider=discord&error=${error}`);
+    return reply.redirect(`/error?error=${error}`);
   }
 
   // Get the code from query string
