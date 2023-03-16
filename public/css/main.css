@@ -22,6 +22,35 @@
     url('../fonts/ABCFavorit-Bold.woff') format('woff');
 }
 
+:root {
+  --lit-gradient-color: #ff844f;
+  --lit-link-color: #e52802;
+}
+
+[data-lit-theme="light"] {
+  --lit-background-color: white;
+  --lit-modal-bg-color: white;
+  --lit-text-color: #0D0E12;
+  --lit-muted-text-color: #35383f;
+  --lit-button-border-color: #e5e7eb;
+  --lit-button-hover-color: #f9fafb;
+  --lit-fine-text-color: #666a71;
+  --lit-error-color: #dc2626;
+  --lit-error-background: #fee2e2;
+}
+
+[data-lit-theme="dark"] {
+  --lit-background-color: #0D0E12;
+  --lit-modal-bg-color: #15181E;
+  --lit-text-color: #e3e7ef;
+  --lit-muted-text-color: #aeb2ba;
+  --lit-button-border-color: #35383f;
+  --lit-button-hover-color: #212630;
+  --lit-fine-text-color: #8e919a;
+  --lit-error-color: #b91c1c;
+  --lit-error-background: #fca5a5;
+}
+
 html {
   font-family: 'Favorit', sans-serif;
 }
@@ -30,6 +59,134 @@ body {
   position: relative;
   width: 100vw;
   height: 100vh;
+  background-color: var(--lit-background-color);
+}
+
+.litBg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--lit-gradient-color);
+}
+
+.litBg--custom {
+  background-image:
+    radial-gradient(at 85% 26%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 64% 67%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 58% 0%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 29% 18%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 56% 41%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 32% 20%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 4% 72%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 10% 18%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 58% 64%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 22% 45%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 3% 18%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 10% 51%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 92% 75%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 66% 6%, var(--lit-background-color) 0px, transparent 50%),
+    radial-gradient(at 92% 50%, var(--lit-background-color) 0px, transparent 50%);
+}
+
+.litModal {
+  background-color: var(--lit-modal-bg-color);
+  color: var(--lit-muted-text-color);
+  border-radius: 0.375rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: calc(100vw - 2rem);
+  max-height: 85vh;
+  padding: 1.5rem;
+  overflow-y: auto;
+  opacity: 0;
+  animation: 300ms litModalFadeIn 1ms ease-in forwards;
+}
+
+[data-lit-theme="light"] .litModal {
+  filter: drop-shadow(0 20px 13px rgba(0,0,0,.03)) drop-shadow(0 8px 5px rgba(0,0,0,.08));
+}
+
+@media (min-width: 375px) {
+  .litModal {
+    width: 354px;
+  }
+}
+
+@media (min-width: 640px) {
+  .litModal {
+    padding: 2rem;
+  }
+}
+
+@keyframes litModalFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.litModal__title {
+  font-size: 1.5rem;
+  line-height: 2rem;
+  text-align: center;
+  color: var(--lit-text-color);
+}
+
+.litModal__body {
+  font-size: 1rem;
+  line-height: 1.5rem;
+  text-align: center;
+  margin-top: 0.25rem;
+}
+
+.litModal__body a {
+  color: var(--lit-link-color);
+}
+
+.litModal__body a:hover {
+  filter: brightness(0.85);
+}
+
+.litImg {
+  position: relative;
+  margin-bottom: 1.5rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+}
+
+.litImg__bg {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 9999px;
+  margin: auto;
+}
+
+.litImg__icon {
+  width: 3rem;
+  height: 3rem;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.litImg__icon--small {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.litImg--error {
+  color: var(--lit-error-color);
+}
+
+.litImg--error .litImg__bg {
+  background-color: var(--lit-error-background);
 }
 
 .hero {
@@ -124,12 +281,4 @@ body {
     font-size: 1.5rem;
     line-height: 2rem;
   }
-}
-
-#googleLogin {
-  min-height: 40px;
-}
-
-#googleLogin:not([hidden]) ~ #discordLogin {
-  margin-top: 1rem;
 }
