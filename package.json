@@ -1,7 +1,7 @@
 {
-  "name": "sample-server",
+  "name": "lit-login-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "Server that handles social login authentication for PKPs",
   "main": "index.js",
   "scripts": {
     "start": "node server.js",
@@ -21,6 +21,7 @@
     "redis": "^4.6.4"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.20",
+    "prettier": "^2.8.4"
   }
 }
