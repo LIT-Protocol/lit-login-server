@@ -156,6 +156,9 @@ fastify.get('/auth/google', function (req, reply) {
     state: state,
     // Enable incremental authorization. Recommended as a best practice.
     include_granted_scopes: true,
+    // Setting the prompt to 'consent' will force this consent
+    // every time, forcing a refresh_token to be returned.
+    prompt: 'consent',
   });
 
   return reply.redirect(301, authorizationUrl);
