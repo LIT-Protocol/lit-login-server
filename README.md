@@ -32,6 +32,7 @@ DISCORD_CLIENT_SECRET=<Ask team member>
 PORT=3300
 DOMAIN=localhost:3300
 ORIGIN=http://localhost:3300
+REDIS_URL=REDIS_URL=redis://default:xxx@redis-yyy:10585
 ```
 
 3. Start your development server:
@@ -56,8 +57,10 @@ The server is hosted on Heroku. You'll need access to the Lit Protocol Heroku ac
 | --------- | ---------------------- | ------------------------------------------------------------------------------------ |
 | GET       | /auth/discord          | Redirect user to Discord authorization URL                                           |
 | GET       | /auth/google           | Redirect user to Google authorization URL                                            |
+| GET       | /auth/apple            | Redirect user to Apple authorization URL                                             |
 | GET       | /auth/discord/callback | Handles callback from Discord then redirects user back to the specified redirect URI |
 | GET       | /auth/google/callback  | Handles callback from Google then redirects user back to the specified redirect URI  |
+| GET       | /auth/apple/callback   | Handles callback from Apple then redirects user back to the specified redirect URI   |
 
 <br>
 
