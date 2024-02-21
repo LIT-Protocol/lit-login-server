@@ -187,10 +187,11 @@ fastify.get('/auth/google/callback', async function (req, reply) {
     return reply.redirect('/error?error=token_error');
   }
 
-  const id_token = tokenReq.tokens.id_token;
+  const idToken = tokenReq.tokens.id_token;
+  const accessToken = tokenReq.tokens.access_token;
   return reply.redirect(
     301,
-    `${appRedirect}/?provider=google&id_token=${id_token}&state=${state}`
+    `${appRedirect}/?provider=google&id_token=${idToken}&state=${state}&access_token=${accessToken}`
   );
 });
 
