@@ -46,12 +46,12 @@ fastify.register(fastifyStatic, {
 
 // Home page
 fastify.get('/', function (req, reply) {
-  return reply.sendFile('index.html');
+  return reply.sendFile("index.html");
 });
 
 // Error page
 fastify.get('/error', function (req, reply) {
-  return reply.sendFile('error.html');
+  return reply.sendFile("error.html");
 });
 
 // Redirect user to Discord authorization URL
