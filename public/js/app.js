@@ -29,10 +29,10 @@ window.onload = async () => {
   const openerWindow = window.opener;
   if (openerWindow) {
     const params = parseLoginParams(window.location.href);
-    const { caller, error, idToken, access_token, provider } = params
+    const { caller, error, idToken, accessToken, provider } = params
 
     if (caller) {
-      openerWindow.postMessage({ error, token: idToken || access_token, provider }, caller);
+      openerWindow.postMessage({ error, token: idToken || accessToken, provider }, caller);
     }
   }
 };
