@@ -59,12 +59,17 @@ fastify.get('/auth/discord', function (req, reply) {
   // Check for app redirect and state params
   const appRedirect = req.query.app_redirect;
   const state = req.query.state;
+  const caller = req.query.caller;
   if (state && appRedirect) {
     // Check if app redirect is valid
     try {
-      const url = new URL(appRedirect);
+      new URL(appRedirect);
       // Keep track of app redirect and state, using state to identify the app making the request
       redisClient.set(state, appRedirect, 'EX', 60 * 60 * 24);
+      if (caller) {
+        // Keep track of caller for that state, used when auth is done using a modal
+        redisClient.set(`${state}:caller`, caller, 'EX', 60 * 60 * 24);
+      }
     } catch (err) {
       return reply.redirect('/error?error=invalid_params');
     }
@@ -94,8 +99,10 @@ fastify.get('/auth/discord/callback', async function (req, reply) {
 
   // Get app redirect from redis
   let appRedirect = null;
+  let caller = null;
   if (state) {
     appRedirect = await redisClient.get(state);
+    caller = await redisClient.get(`${state}:caller`);
   } else {
     return reply.redirect('/error?error=missing_state');
   }
@@ -126,10 +133,11 @@ fastify.get('/auth/discord/callback', async function (req, reply) {
     );
   }
 
-  return reply.redirect(
-    301,
-    `${appRedirect}/?provider=discord&access_token=${json.access_token}&state=${state}`
-  );
+  let url = `${appRedirect}/?provider=discord&access_token=${json.access_token}&state=${state}`;
+  if (caller) {
+    url += `&caller=${caller}`;
+  }
+  return reply.redirect(301, url);
 });
 
 // Redirect user to Google authorization URL
@@ -137,12 +145,17 @@ fastify.get('/auth/google', function (req, reply) {
   // Check for app redirect and state params
   const appRedirect = req.query.app_redirect;
   const state = req.query.state;
+  const caller = req.query.caller;
   if (state && appRedirect) {
     // Check if app redirect is valid
     try {
-      const url = new URL(appRedirect);
+      new URL(appRedirect);
       // Keep track of app redirect and state, using state to identify the app making the request
       redisClient.set(state, appRedirect, 'EX', 60 * 60 * 24);
+      if (caller) {
+        // Keep track of caller for that state, used when auth is done using a modal
+        redisClient.set(`${state}:caller`, caller, 'EX', 60 * 60 * 24);
+      }
     } catch (err) {
       return reply.redirect('/error?error=invalid_params');
     }
@@ -171,8 +184,10 @@ fastify.get('/auth/google/callback', async function (req, reply) {
 
   // Get app redirect from redis
   let appRedirect = null;
+  let caller = null;
   if (state) {
     appRedirect = await redisClient.get(state);
+    caller = await redisClient.get(`${state}:caller`);
   } else {
     return reply.redirect('/error?error=missing_state');
   }
@@ -189,10 +204,11 @@ fastify.get('/auth/google/callback', async function (req, reply) {
 
   const idToken = tokenReq.tokens.id_token;
   const accessToken = tokenReq.tokens.access_token;
-  return reply.redirect(
-    301,
-    `${appRedirect}/?provider=google&id_token=${idToken}&state=${state}&access_token=${accessToken}`
-  );
+  let url = `${appRedirect}/?provider=google&id_token=${idToken}&state=${state}&access_token=${accessToken}`;
+  if (caller) {
+    url += `&caller=${caller}`;
+  }
+  return reply.redirect(301, url);
 });
 
 // Run the server!
