@@ -129,11 +129,11 @@ fastify.get('/auth/discord/callback', async function (req, reply) {
   if (!json.access_token) {
     return reply.redirect(
       301,
-      `${appRedirect}/?provider=discord&error=invalid_access_token`
+      `${appRedirect}?provider=discord&error=invalid_access_token`
     );
   }
 
-  let url = `${appRedirect}/?provider=discord&access_token=${json.access_token}&state=${state}`;
+  let url = `${appRedirect}?provider=discord&access_token=${json.access_token}&state=${state}`;
   if (caller) {
     url += `&caller=${caller}`;
   }
@@ -204,7 +204,7 @@ fastify.get('/auth/google/callback', async function (req, reply) {
 
   const idToken = tokenReq.tokens.id_token;
   const accessToken = tokenReq.tokens.access_token;
-  let url = `${appRedirect}/?provider=google&id_token=${idToken}&state=${state}&access_token=${accessToken}`;
+  let url = `${appRedirect}?provider=google&id_token=${idToken}&state=${state}&access_token=${accessToken}`;
   if (caller) {
     url += `&caller=${caller}`;
   }
