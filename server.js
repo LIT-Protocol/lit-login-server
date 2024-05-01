@@ -204,11 +204,18 @@ fastify.get('/auth/google/callback', async function (req, reply) {
 
   const idToken = tokenReq.tokens.id_token;
   const accessToken = tokenReq.tokens.access_token;
-  let url = `${appRedirect}?provider=google&id_token=${idToken}&state=${state}&access_token=${accessToken}`;
+
+  const url = new URL(appRedirect);
+
+  // Set this way to preserve existing query params in appRedirect
+  url.searchParams.set('provider', 'google');
+  url.searchParams.set('id_token', idToken);
+  url.searchParams.set('state', state);
+  url.searchParams.set('access_token', accessToken);
   if (caller) {
-    url += `&caller=${caller}`;
+    url.searchParams.set('caller', caller);
   }
-  return reply.redirect(301, url);
+  return reply.redirect(301, url.href);
 });
 
 // Run the server!
