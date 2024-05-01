@@ -218,6 +218,73 @@ fastify.get('/auth/google/callback', async function (req, reply) {
   return reply.redirect(301, url.href);
 });
 
+// TODO: Redirect user to Apple authorization URL
+fastify.get('/auth/apple', function (req, reply) {
+  const appRedirect = req.query.app_redirect;
+  const state = req.query.state;
+
+  if (state && appRedirect) {
+    try {
+      const url = new URL(appRedirect);
+      redisClient.set(state, appRedirect, 'EX', 60 * 60 * 24);
+    } catch (err) {
+      return reply.redirect('/error?error=invalid_params');
+    }
+  } else {
+    return reply.redirect('/error?error=invalid_params');
+  }
+
+  const redirectURI = encodeURIComponent(`${ORIGIN}/auth/apple/callback`);
+  const authorizationUrl = `https://appleid.apple.com/auth/authorize?response_type=code&id_token&client_id=${process.env.APPLE_SERVICE_ID}&redirect_uri=${redirectURI}&state=${state}&scope=email`;
+
+  return reply.redirect(301, authorizationUrl);
+});
+
+// TODO: Auth callback endpoint for Apple
+fastify.get('/auth/apple/callback', async function (req, reply) {
+  const state = req.query.state;
+  let appRedirect = null;
+
+  if (state) {
+    appRedirect = await redisClient.get(state);
+  } else {
+    return reply.redirect('/error?error=missing_state');
+  }
+  if (!appRedirect) {
+    return reply.redirect('/error?error=missing_redirect');
+  }
+
+  const code = req.query.code;
+
+  const params = new URLSearchParams();
+  params.append('client_id', process.env.APPLE_SERVICE_ID);
+  params.append('client_secret', YOUR_CLIENT_SECRET); // You'll need to generate this JWT client secret (see generateAppleJWT.js)
+  params.append('code', code);
+  params.append('grant_type', 'authorization_code');
+  params.append('redirect_uri', `${ORIGIN}/auth/apple/callback`);
+
+  const response = await fetch('https://appleid.apple.com/auth/token', {
+    method: 'POST',
+    body: params,
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+  });
+
+  const json = await response.json();
+  if (!json.id_token) {
+    return reply.redirect(
+      301,
+      `${appRedirect}/?provider=apple&error=invalid_id_token`
+    );
+  }
+
+  return reply.redirect(
+    301,
+    `${appRedirect}/?provider=apple&id_token=${json.id_token}&state=${state}`
+  );
+});
+
 // Run the server!
 const start = async () => {
   try {
